@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { useContext } from "react";
+import { ThemeProvider, Backdrop, CircularProgress } from "@mui/material";
+import { StoreContext } from "./store";
+// Import Component
+import SearchBar from "./components/SearchBar";
+import Main from "./components/Main";
+//Import Style
+import "./App.css";
+import darkTheme from "./themes/darkTheme";
 
 function App() {
+  const [state, dispatch] = useContext(StoreContext);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <div className="App">
+        <SearchBar />
+        <Main />
+        <Backdrop open={state.backdrop}>
+          <CircularProgress color="info" />
+        </Backdrop>
+      </div>
+    </ThemeProvider>
   );
 }
 
