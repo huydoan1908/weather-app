@@ -67,7 +67,7 @@ function SearchBar() {
       days: 1,
     };
     axios
-      .get("http://api.weatherapi.com/v1/forecast.json", { params })
+      .get("https://api.weatherapi.com/v1/forecast.json", { params })
       .then((res) => {
         const data = res.data;
         const [current, forecast, background] = compressData(data);
@@ -93,7 +93,7 @@ function SearchBar() {
       days: 1,
     };
     axios
-      .get("http://api.weatherapi.com/v1/forecast.json", { params })
+      .get("https://api.weatherapi.com/v1/forecast.json", { params })
       .then((res) => {
         const data = res.data;
         const [current, forecast, background] = compressData(data);
@@ -128,7 +128,7 @@ function SearchBar() {
               days: 1,
             };
             axios
-              .get("http://api.weatherapi.com/v1/forecast.json", { params })
+              .get("https://api.weatherapi.com/v1/forecast.json", { params })
               .then((res) => {
                 const data = res.data;
                 const [current, forecast, background] = compressData(data);
