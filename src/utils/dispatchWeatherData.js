@@ -1,5 +1,4 @@
-import axios from "axios";
-
+import { actions } from "../reducer";
 function checkBackground(text, isDay) {
   const lowerText = text.toLocaleLowerCase();
   const name = ["rain", "overcast", "snow", "thunder"];
@@ -37,23 +36,19 @@ function compressData(data) {
   return [current, forecast, background];
 }
 
-const weatherApi = async (cityName) => {
-  const params = {
-    key: process.env.REACT_APP_WEATHER_API_KEY,
-    q: cityName,
-    days: 1,
-  };
-  try {
-    const response = await axios.get(
-      "https://api.weatherapi.com/v1/forecast.json",
-      { params }
-    );
-    const data = response.data;
+function dispatchWeatherData(dispatch, data) {
+  // const [state, dispatch] = useContext(StoreContext);
+  if (data) {
     const [current, forecast, background] = compressData(data);
-    console.log(current, forecast, background)
-  } catch (error) {
-    console.log(error);
+    console.log(current, forecast, background);
+    dispatch(actions.setCurrentData(current));
+    dispatch(actions.setBackground(background));
+    dispatch(actions.setForecastData(forecast));
+  } else {
+    dispatch(actions.setCurrentData(undefined));
+    dispatch(actions.setBackground("day"));
+    dispatch(actions.setForecastData(undefined));
   }
-};
+}
 
-export default weatherApi;
+export default dispatchWeatherData;

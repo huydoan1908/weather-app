@@ -1,11 +1,14 @@
 import * as types from "./constants";
 import * as actions from "./actions";
 const initState = {
-  searchText: "",
   current: {},
   forecast: [],
   background: "",
   backdrop: false,
+  error:{
+    message: "",
+    open: false
+  }
 };
 
 function reducer(state, action) {
@@ -20,11 +23,6 @@ function reducer(state, action) {
         ...state,
         forecast: action.payload,
       };
-    case types.SET_SEARCH_TEXT:
-      return {
-        ...state,
-        searchText: action.payload,
-      };
     case types.SET_BACKGROUND:
       return {
         ...state,
@@ -34,6 +32,22 @@ function reducer(state, action) {
       return {
         ...state,
         backdrop: action.payload,
+      };
+    case types.SET_ERROR_MESSAGE:
+      return {
+        ...state,
+        error: {
+          ...state.error,
+          message: action.payload,
+        },
+      };
+    case types.SET_ERROR_OPEN:
+      return {
+        ...state,
+        error: {
+          ...state.error,
+          open: action.payload,
+        },
       };
     default:
       return state;

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import {
   AppBar,
@@ -16,7 +16,7 @@ import MyLocationIcon from "@mui/icons-material/MyLocation";
 
 import { StoreContext } from "../../store";
 import { actions } from "../../reducer";
-import { compressData } from "../Main";
+import dispatchWeatherData from "../../utils/dispatchWeatherData";
 
 const Search = styled("form")(({ theme }) => ({
   position: "relative",
@@ -54,8 +54,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 function SearchBar() {
   const [state, dispatch] = useContext(StoreContext);
+  const [searchText, setSearchText] = useState("");
   const handleSearchChange = (e) => {
-    dispatch(actions.setSearchText(e.target.value));
+    setSearchText(e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -63,26 +64,23 @@ function SearchBar() {
     dispatch(actions.setBackdrop(true));
     const params = {
       key: process.env.REACT_APP_WEATHER_API_KEY,
-      q: state.searchText,
+      q: searchText,
       days: 1,
     };
     axios
       .get("https://api.weatherapi.com/v1/forecast.json", { params })
       .then((res) => {
         const data = res.data;
-        const [current, forecast, background] = compressData(data);
-        dispatch(actions.setCurrentData(current));
-        dispatch(actions.setBackground(background));
-        dispatch(actions.setForecastData(forecast));
+        dispatchWeatherData(dispatch, data);
         dispatch(actions.setBackdrop(false));
       })
       .catch((error) => {
-        dispatch(actions.setCurrentData(undefined));
-        dispatch(actions.setBackground("day"));
-        dispatch(actions.setForecastData(undefined));
+        dispatch(actions.setErrorMessage(error.message));
+        dispatch(actions.setErrorOpen(true));
+        dispatchWeatherData(dispatch);
         dispatch(actions.setBackdrop(false));
       });
-    dispatch(actions.setSearchText(""));
+    setSearchText("");
   };
 
   const handleRefresh = (e) => {
@@ -96,14 +94,13 @@ function SearchBar() {
       .get("https://api.weatherapi.com/v1/forecast.json", { params })
       .then((res) => {
         const data = res.data;
-        const [current, forecast, background] = compressData(data);
-        dispatch(actions.setCurrentData(current));
-        dispatch(actions.setBackground(background));
-        dispatch(actions.setForecastData(forecast));
+        dispatchWeatherData(dispatch, data);
         dispatch(actions.setBackdrop(false));
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(actions.setErrorMessage(error.message));
+        dispatch(actions.setErrorOpen(true));
+        dispatchWeatherData(dispatch);
         dispatch(actions.setBackdrop(false));
       });
   };
@@ -131,22 +128,25 @@ function SearchBar() {
               .get("https://api.weatherapi.com/v1/forecast.json", { params })
               .then((res) => {
                 const data = res.data;
-                const [current, forecast, background] = compressData(data);
-                dispatch(actions.setCurrentData(current));
-                dispatch(actions.setBackground(background));
-                dispatch(actions.setForecastData(forecast));
+                dispatchWeatherData(dispatch, data);
                 dispatch(actions.setBackdrop(false));
               })
               .catch((error) => {
-                console.log(error);
+                dispatch(actions.setErrorMessage(error.message));
+                dispatch(actions.setErrorOpen(true));
+                dispatchWeatherData(dispatch);
                 dispatch(actions.setBackdrop(false));
               });
           })
           .catch((error) => {
-            console.log(error);
+            dispatch(actions.setErrorMessage(error.message));
+            dispatch(actions.setErrorOpen(true));
           });
       },
-      (error) => console.log(error)
+      (error) => {
+        dispatch(actions.setErrorMessage(error.message));
+        dispatch(actions.setErrorOpen(true));
+      }
     );
   };
   return (
@@ -170,7 +170,7 @@ function SearchBar() {
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
               onChange={handleSearchChange}
-              value={state.searchText}
+              value={searchText}
             />
           </Search>
         </Toolbar>

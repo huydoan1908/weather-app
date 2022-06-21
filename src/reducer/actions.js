@@ -10,11 +10,6 @@ export const setForecastData = (payload) => ({
   payload,
 });
 
-export const setSearchText = (payload) => ({
-  type: types.SET_SEARCH_TEXT,
-  payload,
-});
-
 export const setBackground = (payload) => ({
   type: types.SET_BACKGROUND,
   payload,
@@ -22,5 +17,15 @@ export const setBackground = (payload) => ({
 
 export const setBackdrop = (payload) => ({
   type: types.SET_BACKDROP,
+  payload,
+});
+
+export const setErrorMessage = (payload) => ({
+  type: types.SET_ERROR_MESSAGE,
+  payload,
+});
+
+export const setErrorOpen = (payload) => ({
+  type: types.SET_ERROR_OPEN,
   payload,
 });

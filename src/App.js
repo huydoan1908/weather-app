@@ -4,6 +4,7 @@ import { StoreContext } from "./store";
 // Import Component
 import SearchBar from "./components/SearchBar";
 import Main from "./components/Main";
+import ErrorMessage from "./components/ErrorMessage";
 //Import Style
 import "./App.css";
 import darkTheme from "./themes/darkTheme";
@@ -18,6 +19,7 @@ function App() {
         <Backdrop open={state.backdrop}>
           <CircularProgress color="info" />
         </Backdrop>
+        <ErrorMessage />
       </div>
     </ThemeProvider>
   );
