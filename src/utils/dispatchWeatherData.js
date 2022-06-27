@@ -40,7 +40,6 @@ function dispatchWeatherData(dispatch, data) {
   // const [state, dispatch] = useContext(StoreContext);
   if (data) {
     const [current, forecast, background] = compressData(data);
-    console.log(current, forecast, background);
     dispatch(actions.setCurrentData(current));
     dispatch(actions.setBackground(background));
     dispatch(actions.setForecastData(forecast));

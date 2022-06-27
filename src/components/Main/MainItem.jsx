@@ -79,7 +79,7 @@ function MainItem({ data }) {
           {data.con_text}
         </Typography>
         <Typography variant="body2" align="center" fontWeight={200} mb={1}>
-          Updated as of {data.time}
+          Updated as of {data.time} (Local time)
         </Typography>
         <Box
           sx={{

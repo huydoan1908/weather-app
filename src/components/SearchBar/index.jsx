@@ -42,7 +42,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -59,7 +58,7 @@ function SearchBar() {
     setSearchText(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(actions.setBackdrop(true));
     const params = {
@@ -67,84 +66,90 @@ function SearchBar() {
       q: searchText,
       days: 1,
     };
-    axios
-      .get("https://api.weatherapi.com/v1/forecast.json", { params })
-      .then((res) => {
-        const data = res.data;
-        dispatchWeatherData(dispatch, data);
-        dispatch(actions.setBackdrop(false));
-      })
-      .catch((error) => {
-        dispatch(actions.setErrorMessage(error.message));
-        dispatch(actions.setErrorOpen(true));
-        dispatchWeatherData(dispatch);
-        dispatch(actions.setBackdrop(false));
-      });
+    try {
+      const response = await axios.get(
+        "https://api.weatherapi.com/v1/forecast.json",
+        { params }
+      );
+      const data = response.data;
+      dispatchWeatherData(dispatch, data);
+      dispatch(actions.setBackdrop(false));
+    } catch (error) {
+      dispatch(
+        actions.setErrorMessage("Location is invalid. Please try again.")
+      );
+      dispatch(actions.setErrorOpen(true));
+      dispatchWeatherData(dispatch);
+      dispatch(actions.setBackdrop(false));
+    }
     setSearchText("");
   };
 
-  const handleRefresh = (e) => {
+  const handleRefresh = async (e) => {
     dispatch(actions.setBackdrop(true));
     const params = {
       key: process.env.REACT_APP_WEATHER_API_KEY,
       q: "Ha Noi",
       days: 1,
     };
-    axios
-      .get("https://api.weatherapi.com/v1/forecast.json", { params })
-      .then((res) => {
-        const data = res.data;
-        dispatchWeatherData(dispatch, data);
-        dispatch(actions.setBackdrop(false));
-      })
-      .catch((error) => {
-        dispatch(actions.setErrorMessage(error.message));
-        dispatch(actions.setErrorOpen(true));
-        dispatchWeatherData(dispatch);
-        dispatch(actions.setBackdrop(false));
-      });
+    try {
+      const response = await axios.get(
+        "https://api.weatherapi.com/v1/forecast.json",
+        { params }
+      );
+      const data = response.data;
+      dispatchWeatherData(dispatch, data);
+      dispatch(actions.setBackdrop(false));
+    } catch (error) {
+      dispatch(
+        actions.setErrorMessage("Location is invalid. Please try again.")
+      );
+      dispatch(actions.setErrorOpen(true));
+      dispatchWeatherData(dispatch);
+      dispatch(actions.setBackdrop(false));
+    }
   };
 
   const handleMyLocation = (e) => {
     dispatch(actions.setBackdrop(true));
     navigator.geolocation.getCurrentPosition(
-      (res) => {
-        const params = {
+      async (res) => {
+        const locationParams = {
           appid: process.env.REACT_APP_GEO_API_KEY,
           lat: res.coords.latitude,
           lon: res.coords.longitude,
         };
-        axios
-          .get("https://api.openweathermap.org/geo/1.0/reverse", { params })
-          .then((res) => {
-            const cityName = res.data[0].name;
-            console.log(cityName);
-            const params = {
-              key: process.env.REACT_APP_WEATHER_API_KEY,
-              q: cityName,
-              days: 1,
-            };
-            axios
-              .get("https://api.weatherapi.com/v1/forecast.json", { params })
-              .then((res) => {
-                const data = res.data;
-                dispatchWeatherData(dispatch, data);
-                dispatch(actions.setBackdrop(false));
-              })
-              .catch((error) => {
-                dispatch(actions.setErrorMessage(error.message));
-                dispatch(actions.setErrorOpen(true));
-                dispatchWeatherData(dispatch);
-                dispatch(actions.setBackdrop(false));
-              });
-          })
-          .catch((error) => {
-            dispatch(actions.setErrorMessage(error.message));
-            dispatch(actions.setErrorOpen(true));
-          });
+        try {
+          const locationRes = await axios.get(
+            "https://api.openweathermap.org/geo/1.0/reverse",
+            { params: locationParams }
+          );
+          const cityName = locationRes.data[0].name;
+          const weatherParams = {
+            key: process.env.REACT_APP_WEATHER_API_KEY,
+            q: cityName,
+            days: 1,
+          };
+          const weatherRes = await axios.get(
+            "https://api.weatherapi.com/v1/forecast.json",
+            { params: weatherParams }
+          );
+          const data = weatherRes.data;
+          dispatchWeatherData(dispatch, data);
+          dispatch(actions.setBackdrop(false));
+        } catch (error) {
+          dispatch(
+            actions.setErrorMessage("An error occurred. Please try again.")
+          );
+          dispatch(actions.setErrorOpen(true));
+          dispatchWeatherData(dispatch);
+          dispatch(actions.setBackdrop(false));
+        }
       },
       (error) => {
-        dispatch(actions.setErrorMessage(error.message));
+        dispatch(
+          actions.setErrorMessage("An error occurred. Please try again.")
+        );
         dispatch(actions.setErrorOpen(true));
       }
     );

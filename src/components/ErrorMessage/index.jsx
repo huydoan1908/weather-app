@@ -17,7 +17,7 @@ const ErrorMessage = () => {
   return (
     <Snackbar
       open={state.error.open}
-      autoHideDuration={6000}
+      autoHideDuration={3000}
       onClose={handleClose}
     >
       <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
